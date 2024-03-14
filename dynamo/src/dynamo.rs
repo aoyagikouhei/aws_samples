@@ -1,7 +1,15 @@
 use std::collections::HashMap;
 
 use aws_config::Region;
-use aws_sdk_dynamodb::{operation::{create_table::CreateTableOutput, delete_table::DeleteTableOutput}, types::{AttributeDefinition, AttributeValue, KeySchemaElement, KeyType, ProvisionedThroughput, ScalarAttributeType}};
+use aws_sdk_dynamodb::{
+    operation::{
+        create_table::CreateTableOutput, delete_table::DeleteTableOutput, put_item::PutItemOutput,
+    },
+    types::{
+        AttributeDefinition, AttributeValue, KeySchemaElement, KeyType, ProvisionedThroughput,
+        ScalarAttributeType,
+    },
+};
 use aws_smithy_types_convert::stream::PaginationStreamExt;
 use futures_util::{Stream, TryStreamExt};
 
@@ -43,15 +51,15 @@ impl Client {
             .write_capacity_units(1)
             .build()?;
 
-        self
-            .client
+        self.client
             .create_table()
             .table_name(table_name)
             .set_key_schema(Some(vec![ks]))
             .set_attribute_definitions(Some(vec![ad]))
             .set_provisioned_throughput(Some(pt))
             .send()
-            .await.map_err(|e| e.into())
+            .await
+            .map_err(|e| e.into())
     }
 
     pub async fn delete_table(&self, table_name: &str) -> anyhow::Result<DeleteTableOutput> {
@@ -63,14 +71,18 @@ impl Client {
             .map_err(|e| e.into())
     }
 
-    pub async fn create(&self, table_name: &str, data: HashMap<String, AttributeValue>) -> anyhow::Result<()> {
+    pub async fn create(
+        &self,
+        table_name: &str,
+        data: HashMap<String, AttributeValue>,
+    ) -> anyhow::Result<PutItemOutput> {
         self.client
             .put_item()
             .table_name(table_name)
             .set_item(Some(data))
             .send()
-            .await?;
-        Ok(())
+            .await
+            .map_err(|e| e.into())
     }
 
     pub fn get_stream(

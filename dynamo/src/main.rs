@@ -1,7 +1,7 @@
-use std::collections::HashMap;
 use aws_sdk_dynamodb::types::AttributeValue;
 use dynamo::Client;
 use futures_util::TryStreamExt;
+use std::collections::HashMap;
 
 pub mod dynamo;
 
