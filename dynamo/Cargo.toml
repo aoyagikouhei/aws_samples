@@ -1,0 +1,14 @@
+[package]
+name = "dynamo"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1"
+aws-smithy-types-convert = { version = "0.60.2", features = ["convert-streams"] }
+aws-config = { version = "1.1.7", features = ["behavior-version-latest"] }
+aws-sdk-dynamodb = "1.16.0"
+futures-util = "0.3.30"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
